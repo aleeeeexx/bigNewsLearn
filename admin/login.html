@@ -15,6 +15,8 @@
   <script src="./libs/jquery-1.12.4.min.js"></script>
   <!-- 引入bootstrap的js文件 -->
   <script src="./libs/bootstrap/js/bootstrap.min.js"></script>
+  <!-- 引入封装好的接口地址 -->
+  <script src="./libs/http.js"></script>
 </head>
 
 <body>
@@ -38,6 +40,60 @@
     </div>
   </div>
 
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">温馨提示</h4>
+        </div>
+        <div class="modal-body">
+          <p></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">确定</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
-
+  <script>
+    $('.input_sub').on('click',function(e){
+      e.preventDefault();
+      let username=$('.input_txt').val().trim();
+      let password=$('.input_pass').val().trim();
+      if(username==''&&password==''){
+        //修改模态框的显示内容
+        $('.modal-body>p').text('用户名和密码不能为空');
+        $('#myModal').modal();
+        return;
+      }
+      $.ajax({
+        type:'post',
+        url:BigNew.BigNew,
+        data:{
+          username:username,
+          password:password
+        },
+        success:function(backData){
+          if(backData.code==200){
+            $('.modal-body>p').text('登录成功');
+            $('#myModal').modal();
+            $('#myModal').on('hidden.bs.modal',function(){
+              window.localStorage.setItem('token',backData.token);
+              window.location.href='./index.html';
+            });
+            
+          }else{
+            $('.modal-body>p').text('用户名或密码错误');
+            $('#myModal').modal();
+            $('.input_txt').val('');
+            $('.input_pass').val('');
+          }
+        }
+      })
+      
+    })
+  </script>
 </html>
